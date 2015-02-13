@@ -1,0 +1,24 @@
+{
+  "name": "bookshelf-restful",
+  "version": "0.0.0",
+  "description": "Generates ReSTful APIs for database models defined using bookshelfjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ganemone/bookshelf-restful.git"
+  },
+  "keywords": [
+    "node.js",
+    "bookshelf.js",
+    "restful",
+    "orm"
+  ],
+  "author": "Giancarlo Anemone",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ganemone/bookshelf-restful/issues"
+  }
+}
