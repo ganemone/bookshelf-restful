@@ -20,5 +20,16 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ganemone/bookshelf-restful/issues"
+  },
+  "dependencies": {
+    "knex": "~0.7.3",
+    "bookshelf": "~0.7.9",
+    "mysql": "~2.5.4",
+    "restify": "~2.8.5",
+    "underscore": "~1.7.0"
+  },
+  "devDependencies": {
+    "mocha": "~2.1.0",
+    "chai": "~2.0.0"
   }
 }
