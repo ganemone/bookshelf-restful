@@ -1,4 +1,5 @@
 var knex = require('./shared').knex;
+var noarg = require('./noarg');
 
 module.exports = function fixture(model, data) {
   before(function(done) {
@@ -13,6 +14,6 @@ module.exports = function fixture(model, data) {
 
   after(function(done) {
     var tableName = new model({}).tableName;
-    knex(tableName).delete().then().catch(done);
-  })
+    knex(tableName).delete().then(noarg(done)).catch(done);
+  });
 }
