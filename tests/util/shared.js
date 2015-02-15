@@ -16,3 +16,4 @@ var server = restify.createServer({
 
 exports.server = server;
 exports.bookshelf = bookshelf;
+exports.knex = knex;
