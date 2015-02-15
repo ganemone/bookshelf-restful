@@ -4,7 +4,7 @@
   "description": "Generates ReSTful APIs for database models defined using bookshelfjs",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "mocha tests/ --recursive"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "mocha": "~2.1.0",
-    "chai": "~2.0.0"
+    "chai": "~2.0.0",
+    "rewire": "~2.2.0"
   }
 }
