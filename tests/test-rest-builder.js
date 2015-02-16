@@ -41,6 +41,12 @@ function getMockPre() {
   return mockPre;
 }
 
+var searchParams = JSON.stringify({
+  filters: {
+    'username': 'somestuff'
+  }
+});
+
 describe('RestBuilder', function() {
   describe('defineGetSingle', function() {
     setUpRestBuilder();
@@ -91,9 +97,38 @@ describe('RestBuilder', function() {
           done();
         });
       });
+      it('should call db.get with params', function (done) {
+        this.rb.defineGetMany('users', user, [], []);
+        this.client.get('/users?q=' + searchParams, function(err, req, res) {
+          assert.ifError(err);
+          mockDB.get.assertCalledOnceWithArgsIncluding([user]);
+          done();
+        });
+      });
     });
     describe('with preprocessors', function () {
-
+      it('should call db.get without params', function (done) {
+        var pre = [getMockPre(), getMockPre()];
+        this.rb.defineGetMany('users', user, pre, []);
+        this.client.get('/users', function(err, req, res) {
+          pre[0].assertCalled('should call first preprocessor');
+          pre[1].assertCalled('should call second preprocessor');
+          assert.ifError(err);
+          mockDB.get.assertCalledOnceWithArgsIncluding([user]);
+          done();
+        });
+      });
+      it('should call db.get with params', function (done) {
+        var pre = [getMockPre(), getMockPre()];
+        this.rb.defineGetMany('users', user, pre, []);
+        this.client.get('/users?q=' + searchParams, function(err, req, res) {
+          pre[0].assertCalled('should call first preprocessor');
+          pre[1].assertCalled('should call second preprocessor');
+          assert.ifError(err);
+          mockDB.get.assertCalledOnceWithArgsIncluding([user]);
+          done();
+        });
+      });
     });
   });
 });
