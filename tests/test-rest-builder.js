@@ -29,6 +29,18 @@ function setUpRestBuilder() {
   });
 }
 
+function getMockPre() {
+  var called = false;
+  function mockPre(req, res, next) {
+    called = true;
+    return next();
+  }
+  mockPre.assertCalled = function assertCalled(message) {
+    assert.ok(called, message);
+  }
+  return mockPre;
+}
+
 describe('RestBuilder', function() {
   describe('defineGetSingle', function() {
     setUpRestBuilder();
@@ -45,33 +57,22 @@ describe('RestBuilder', function() {
     describe('with preprocessors', function () {
       it('should call a single preprocessor', function(done) {
         var called = false;
-        function mockPre(req, res, next) {
-          called = true;
-          return next();
-        }
+        var mockPre = getMockPre();
         this.rb.defineGetSingle('users', user, [mockPre], []);
         this.client.get('/users/1', function(err, req, res) {
-          assert.ok(called, 'should call preprocessors');
+          mockPre.assertCalled('should call preprocessors');
           assert.ifError(err);
           mockDB.get.assertCalledOnceWithArgsIncluding(['1', user]);
           done();
         });
       });
       it('should call all the preprocessors', function (done) {
-        var called = false;
-        function mockPre(req, res, next) {
-          called = true;
-          return next();
-        }
-        var another = false;
-        function _mockPre(req, res, next) {
-          another = true;
-          return next();
-        }
+        var mockPre = getMockPre();
+        var _mockPre = getMockPre();
         this.rb.defineGetSingle('users', user, [mockPre, _mockPre], []);
         this.client.get('/users/1', function(err, req, res) {
-          assert.ok(called, 'should call first preprocessor');
-          assert.ok(another, 'should call second preprocessor');
+          mockPre.assertCalled('should call first preprocessor');
+          _mockPre.assertCalled('should call second preprocessor');
           assert.ifError(err);
           mockDB.get.assertCalledOnceWithArgsIncluding(['1', user]);
           done();
