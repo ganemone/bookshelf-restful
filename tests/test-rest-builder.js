@@ -7,13 +7,19 @@ var shared = require('./util/shared');
 var user = require('./util/models/user');
 var noarg = require('./util/noarg');
 
-mockDB.get.addSideEffect(function() {
+
+mockDB.get.addSideEffect(cbSideEffect);
+mockDB.update.addSideEffect(cbSideEffect);
+mockDB.delete.addSideEffect(cbSideEffect);
+mockDB.add.addSideEffect(cbSideEffect);
+
+RestBuilder.__set__('db', mockDB);
+
+function cbSideEffect() {
   var args = Array.prototype.slice.call(arguments);
   var cb = args.pop();
   cb(null, {});
-});
-
-RestBuilder.__set__('db', mockDB);
+}
 
 function setUpRestBuilder() {
   beforeEach(function(done) {
@@ -48,6 +54,9 @@ var searchParams = JSON.stringify({
 });
 
 describe('RestBuilder', function() {
+  // ----------------
+  // Get Single Tests
+  // ----------------
   describe('defineGetSingle', function() {
     setUpRestBuilder();
     describe('no processors', function() {
@@ -86,6 +95,9 @@ describe('RestBuilder', function() {
       });
     });
   });
+  // ----------------
+  // Get Many Tests
+  // ----------------
   describe('defineGetMany', function () {
     setUpRestBuilder();
     describe('no processors', function () {
@@ -126,6 +138,47 @@ describe('RestBuilder', function() {
           pre[1].assertCalled('should call second preprocessor');
           assert.ifError(err);
           mockDB.get.assertCalledOnceWithArgsIncluding([user]);
+          done();
+        });
+      });
+    });
+  });
+  // ----------------
+  // Delete Tests
+  // ----------------
+  describe('defineDelete', function() {
+    setUpRestBuilder();
+    describe('no processors', function() {
+      it('should call db.del', function(done) {
+        this.rb.defineDelete('users', user, [], []);
+        this.client.del('/users/1', function(err, req, res) {
+          assert.ifError(err);
+          mockDB.delete.assertCalledOnceWithArgsIncluding(['1', user]);
+          done();
+        });
+      });
+    });
+    describe('with preprocessors', function () {
+      it('should call a single preprocessor', function(done) {
+        var called = false;
+        var mockPre = getMockPre();
+        this.rb.defineDelete('users', user, [mockPre], []);
+        this.client.del('/users/1', function(err, req, res) {
+          mockPre.assertCalled('should call preprocessors');
+          assert.ifError(err);
+          mockDB.delete.assertCalledOnceWithArgsIncluding(['1', user]);
+          done();
+        });
+      });
+      it('should call all the preprocessors', function (done) {
+        var mockPre = getMockPre();
+        var _mockPre = getMockPre();
+        this.rb.defineDelete('users', user, [mockPre, _mockPre], []);
+        this.client.del('/users/1', function(err, req, res) {
+          mockPre.assertCalled('should call first preprocessor');
+          _mockPre.assertCalled('should call second preprocessor');
+          assert.ifError(err);
+          mockDB.delete.assertCalledOnceWithArgsIncluding(['1', user]);
           done();
         });
       });
