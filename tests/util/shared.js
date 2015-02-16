@@ -23,5 +23,5 @@ exports.createServer = function() {
   });
 };
 exports.client = restify.createJSONClient({
-  url: 'http://localhost:5000'
+  url: 'http://localhost:8080'
 });
