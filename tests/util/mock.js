@@ -22,15 +22,23 @@ module.exports = function makeMock(object) {
 
   function mockFunction(name) {
     var returns = undefined;
+    var sideEffects = [];
     function _mockFunction() {
+      applySideEffects.apply(this, arguments);
       args[name] = args[name] || [];
       args[name].push(Array.prototype.slice.call(arguments));
       return returns;
+    }
+    function applySideEffects() {
+      for (var i = 0; i < sideEffects.length; i++) {
+        sideEffects[i].apply(this, arguments);
+      };
     }
     _mockFunction.assertCalledOnceWith = function assertCalledOnceWith(expectedArgs, message) {
       assert.deepEqual(args[name][0], expectedArgs, message);
     }
     _mockFunction.assertCalledWith = function assertCalledWith(expectedArgs, message) {
+      // TODO: Implement Deep equal comparison
       actualArgs = args[name];
       for (var i = 0; i < actualArgs.length; i++) {
         for (var j = 0; j < actualArgs[i].length; j++) {
@@ -52,6 +60,12 @@ module.exports = function makeMock(object) {
     }
     _mockFunction.returns = function returns(value) {
       returns = value;
+    }
+    _mockFunction.assertCalledOnceWithArgsIncluding = function assertCalledWithArgsIncluding(expectedArgs, message) {
+      assert.includeMembers(args[name][0], expectedArgs, message);
+    }
+    _mockFunction.addSideEffect = function(sideEffectFunc) {
+      sideEffects.push(sideEffectFunc);
     }
     return _mockFunction;
   }
