@@ -10,18 +10,18 @@ var knex = require('knex')({
   }
 });
 var bookshelf = require('bookshelf')(knex);
-var server = restify.createServer({
-  name: 'TestApp'
-});
 
-exports.server = server;
 exports.bookshelf = bookshelf;
 exports.knex = knex;
-exports.createServer = function() {
+var createServer = exports.createServer = function createServer() {
   return restify.createServer({
     name: 'TestApp'
   });
 };
-exports.client = restify.createJSONClient({
-  url: 'http://localhost:8080'
-});
+var createClient = exports.createClient = function createClient() {
+  return restify.createJSONClient({
+    url: 'http://localhost:8080'
+  });
+};
+exports.server = createServer();
+exports.client = createClient();
