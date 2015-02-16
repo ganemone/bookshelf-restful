@@ -17,3 +17,11 @@ var server = restify.createServer({
 exports.server = server;
 exports.bookshelf = bookshelf;
 exports.knex = knex;
+exports.createServer = function() {
+  return restify.createServer({
+    name: 'TestApp'
+  });
+};
+exports.client = restify.createJSONClient({
+  url: 'http://localhost:5000'
+});
