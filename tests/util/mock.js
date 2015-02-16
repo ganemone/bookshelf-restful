@@ -21,9 +21,11 @@ module.exports = function makeMock(object) {
   return mockObj;
 
   function mockFunction(name) {
+    var returns = undefined;
     function _mockFunction() {
       args[name] = args[name] || [];
       args[name].push(Array.prototype.slice.call(arguments));
+      return returns;
     }
     _mockFunction.assertCalledOnceWith = function assertCalledOnceWith(expectedArgs, message) {
       assert.deepEqual(args[name][0], expectedArgs, message);
@@ -47,6 +49,9 @@ module.exports = function makeMock(object) {
     }
     _mockFunction.assertNumTimesCalled = function assertNumTimesCalled(num, message) {
       assert.equal(args[name].length, num, message);
+    }
+    _mockFunction.returns = function returns(value) {
+      returns = value;
     }
     return _mockFunction;
   }
