@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var rewire = require('rewire');
 var BRestful = rewire('../lib/brestful');
 var server, bookshelf = require('./util/shared');
-var mock = require('./util/mock');
+var mock = require('mock-object');
 var User = require('./util/models/user')
 var mockBuilder = mock(require('../lib/rest-builder'));
 

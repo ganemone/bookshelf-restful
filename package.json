@@ -26,7 +26,8 @@
     "bookshelf": "~0.7.9",
     "mysql": "~2.5.4",
     "restify": "~2.8.5",
-    "underscore": "~1.7.0"
+    "underscore": "~1.7.0",
+    "mock-object": "0.0.1"
   },
   "devDependencies": {
     "mocha": "~2.1.0",
