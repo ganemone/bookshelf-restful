@@ -27,8 +27,8 @@ describe('brestful', function() {
   describe('createAPI', function() {
     it('GET', function() {
       rest.createAPI(User, ['GET']);
-      rest.builder.defineGetSingle.assertCalledOnceWith([User, [], []]);
-      rest.builder.defineGetMany.assertCalledOnceWith([User, [], []]);
+      rest.builder.defineGetSingle.assertCalledOnceWith(['users', User, [], []]);
+      rest.builder.defineGetMany.assertCalledOnceWith(['users', User, [], []]);
     });
     it('GET + POST', function() {
       rest.builder.reset();
@@ -43,9 +43,9 @@ describe('brestful', function() {
           'MANY': ['many']
         }
       });
-      rest.builder.defineGetSingle.assertCalledOnceWith([User, ['single'], ['single']]);
-      rest.builder.defineGetMany.assertCalledOnceWith([User, ['many'], ['many']]);
-      rest.builder.definePost.assertCalledOnceWith([User, [], []]);
+      rest.builder.defineGetSingle.assertCalledOnceWith(['users', User, ['single'], ['single']]);
+      rest.builder.defineGetMany.assertCalledOnceWith(['users', User, ['many'], ['many']]);
+      rest.builder.definePost.assertCalledOnceWith(['users', User, [], []]);
     });
     it('ALL', function() {
       rest.builder.reset();
@@ -61,11 +61,11 @@ describe('brestful', function() {
           'DELETE': ['delete']
         }
       );
-      rest.builder.defineGetSingle.assertCalledOnceWith([User, [], []]);
-      rest.builder.defineGetMany.assertCalledOnceWith([User, [], []]);
-      rest.builder.definePost.assertCalledOnceWith([User, ['post'], ['post']]);
-      rest.builder.definePut.assertCalledOnceWith([User, ['put'], []]);
-      rest.builder.defineDelete.assertCalledOnceWith([User, [], ['delete']]);
+      rest.builder.defineGetSingle.assertCalledOnceWith(['users', User, [], []]);
+      rest.builder.defineGetMany.assertCalledOnceWith(['users', User, [], []]);
+      rest.builder.definePost.assertCalledOnceWith(['users', User, ['post'], ['post']]);
+      rest.builder.definePut.assertCalledOnceWith(['users', User, ['put'], []]);
+      rest.builder.defineDelete.assertCalledOnceWith(['users', User, [], ['delete']]);
     });
   });
 });
