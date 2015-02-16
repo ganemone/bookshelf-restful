@@ -16,13 +16,13 @@ mockDB.get.addSideEffect(function() {
 RestBuilder.__set__('db', mockDB);
 
 function setUpRestBuilder() {
-  before(function(done) {
+  beforeEach(function(done) {
     this.server = shared.createServer();
     this.rb = new RestBuilder(this.server);
     this.server.listen(8080, noarg(done));
     this.client = shared.createClient();
   });
-  after(function() {
+  afterEach(function() {
     this.server.close();
     this.server = null;
     this.client = null;
@@ -31,8 +31,8 @@ function setUpRestBuilder() {
 
 describe('RestBuilder', function() {
   describe('defineGetSingle', function() {
+    setUpRestBuilder();
     describe('no processors', function() {
-      setUpRestBuilder();
       it('should call db.get', function(done) {
         this.rb.defineGetSingle('users', user, [], []);
         this.client.get('/users/1', function(err, req, res) {
@@ -42,9 +42,8 @@ describe('RestBuilder', function() {
         });
       });
     });
-    describe('test', function () {
-      setUpRestBuilder();
-      it('should call db.get', function(done) {
+    describe('with preprocessors', function () {
+      it('should call a single preprocessor', function(done) {
         var called = false;
         function mockPre(req, res, next) {
           called = true;
@@ -53,6 +52,26 @@ describe('RestBuilder', function() {
         this.rb.defineGetSingle('users', user, [mockPre], []);
         this.client.get('/users/1', function(err, req, res) {
           assert.ok(called, 'should call preprocessors');
+          assert.ifError(err);
+          mockDB.get.assertCalledOnceWithArgsIncluding(['1', user]);
+          done();
+        });
+      });
+      it('should call all the preprocessors', function (done) {
+        var called = false;
+        function mockPre(req, res, next) {
+          called = true;
+          return next();
+        }
+        var another = false;
+        function _mockPre(req, res, next) {
+          another = true;
+          return next();
+        }
+        this.rb.defineGetSingle('users', user, [mockPre, _mockPre], []);
+        this.client.get('/users/1', function(err, req, res) {
+          assert.ok(called, 'should call first preprocessor');
+          assert.ok(another, 'should call second preprocessor');
           assert.ifError(err);
           mockDB.get.assertCalledOnceWithArgsIncluding(['1', user]);
           done();
