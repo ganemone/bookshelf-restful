@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
 
-module.exports = function makeMock(object) {
+module.exports = function makeMock(object, type) {
   var args = [];
   var mockObj = function mockObj() {};
 
@@ -8,25 +8,39 @@ module.exports = function makeMock(object) {
     mockObj.prototype[prop] = mockFunction(prop);
   }
 
-  mockObj.prototype.reset = function reset() {
+  mockObj.prototype.reset = reset;
+  mockObj.prototype.getArgs = getArgs;
+
+  for (prop in object) {
+    if (object.hasOwnProperty(prop) && typeof object[prop] === 'function') {
+      mockObj[prop] = mockFunction(prop);
+    }
+  }
+
+  mockObj.reset = reset;
+  mockObj.getArgs = getArgs;
+
+  function reset() {
     for (prop in args) {
       if (args.hasOwnProperty(prop)) {
         args[prop] = [];
       }
     }
   }
-  mockObj.prototype.getArgs = function getArgs() {
+
+  function getArgs() {
     return args;
   }
+
   return mockObj;
 
   function mockFunction(name) {
     var returns = undefined;
     var sideEffects = [];
+    args[name] = [];
     function _mockFunction() {
-      applySideEffects.apply(this, arguments);
-      args[name] = args[name] || [];
       args[name].push(Array.prototype.slice.call(arguments));
+      applySideEffects.apply(this, arguments);
       return returns;
     }
     function applySideEffects() {
@@ -36,6 +50,9 @@ module.exports = function makeMock(object) {
     }
     _mockFunction.assertCalledOnceWith = function assertCalledOnceWith(expectedArgs, message) {
       assert.deepEqual(args[name][0], expectedArgs, message);
+    }
+    _mockFunction.assertCalledOnce = function assertCalledOnce(message) {
+      assert.equal(args[name].length, 1, message);
     }
     _mockFunction.assertCalledWith = function assertCalledWith(expectedArgs, message) {
       // TODO: Implement Deep equal comparison
