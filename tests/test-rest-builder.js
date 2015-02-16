@@ -80,4 +80,20 @@ describe('RestBuilder', function() {
       });
     });
   });
+  describe('defineGetMany', function () {
+    setUpRestBuilder();
+    describe('no processors', function () {
+      it('should call db.get with no params', function (done) {
+        this.rb.defineGetMany('users', user, [], []);
+        this.client.get('/users', function(err, req, res) {
+          assert.ifError(err);
+          mockDB.get.assertCalledOnceWithArgsIncluding([user]);
+          done();
+        });
+      });
+    });
+    describe('with preprocessors', function () {
+
+    });
+  });
 });
