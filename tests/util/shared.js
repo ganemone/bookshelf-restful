@@ -14,9 +14,13 @@ var bookshelf = require('bookshelf')(knex);
 exports.bookshelf = bookshelf;
 exports.knex = knex;
 var createServer = exports.createServer = function createServer() {
-  return restify.createServer({
+  var server = restify.createServer({
     name: 'TestApp'
   });
+  server.use(restify.bodyParser({
+    mapParams: true,
+  }));
+  return server;
 };
 var createClient = exports.createClient = function createClient() {
   return restify.createJSONClient({
