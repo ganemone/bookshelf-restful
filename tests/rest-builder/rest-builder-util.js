@@ -26,7 +26,6 @@ function getMockPre() {
 }
 
 function cbSideEffect() {
-  console.log('Calling Callback');
   var args = Array.prototype.slice.call(arguments);
   var cb = args.pop();
   cb(null, {});
