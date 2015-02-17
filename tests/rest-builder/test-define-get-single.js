@@ -1,57 +1,12 @@
 var assert = require('chai').assert;
-var rewire = require('rewire');
-var RestBuilder = rewire('../../lib/rest-builder');
-var mock = require('mock-object');
-var mockDB = mock(require('../../lib/db'));
-var shared = require('../util/shared');
 var user = require('../util/models/user');
-var noarg = require('../util/noarg');
-
-mockDB.get.addSideEffect(cbSideEffect);
-
-RestBuilder.__set__('db', mockDB);
-
-function cbSideEffect() {
-  var args = Array.prototype.slice.call(arguments);
-  var cb = args.pop();
-  cb(null, {});
-}
-
-function setUpRestBuilder() {
-  beforeEach(function(done) {
-    this.server = shared.createServer();
-    this.rb = new RestBuilder(this.server);
-    this.server.listen(8080, noarg(done));
-    this.client = shared.createClient();
-  });
-  afterEach(function() {
-    this.server.close();
-    this.server = null;
-    this.client = null;
-  });
-}
-
-function getMockPre() {
-  var called = false;
-  function mockPre(req, res, next) {
-    called = true;
-    return next();
-  }
-  mockPre.assertCalled = function assertCalled(message) {
-    assert.ok(called, message);
-  }
-  return mockPre;
-}
-
-var searchParams = JSON.stringify({
-  filters: {
-    'username': 'somestuff'
-  }
-});
+var util = require('./rest-builder-util');
+var mockDB = util.mockDB;
+var getMockPre = util.getMockPre;
 
 describe('RestBuilder', function() {
   describe('defineGetSingle', function() {
-    setUpRestBuilder();
+    util.setUp();
     describe('no processors', function() {
       it('should call db.get', function(done) {
         this.rb.defineGetSingle('users', user, [], []);
@@ -64,7 +19,6 @@ describe('RestBuilder', function() {
     });
     describe('with preprocessors', function () {
       it('should call a single preprocessor', function(done) {
-        var called = false;
         var mockPre = getMockPre();
         this.rb.defineGetSingle('users', user, [mockPre], []);
         this.client.get('/users/1', function(err, req, res) {
