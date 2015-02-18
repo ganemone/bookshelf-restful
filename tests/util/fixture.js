@@ -1,5 +1,4 @@
-var knex = require('./shared').knex;
-var noarg = require('./noarg');
+var clearTable = require('./clearTable');
 
 module.exports = function fixture(model, data) {
   before(function(done) {
@@ -12,8 +11,5 @@ module.exports = function fixture(model, data) {
     }).catch(done);
   });
 
-  after(function(done) {
-    var tableName = new model({}).tableName;
-    knex(tableName).delete().then(noarg(done)).catch(done);
-  });
+  clearTable(new model({}).tableName);
 }
