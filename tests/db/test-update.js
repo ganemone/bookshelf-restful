@@ -11,11 +11,21 @@ db.__set__('resBuilder', mockResBuilder);
 mockResBuilder.get201.returns({ key: 'value' });
 mockResBuilder.get400.returns({ message: 'message' });
 
-describe('db.add', function () {
+describe('db.update', function () {
   afterEach(function () {
     mockResBuilder.reset();
   });
+
   clearTable('users');
+
+  describe('when the model exists', function () {
+
+  });
+
+  describe('when the model does not exist', function () {
+
+  });
+
   it('should respond with a 201 when successfully added', function (done) {
     db.add(User, {
       username: 'ganemone',
