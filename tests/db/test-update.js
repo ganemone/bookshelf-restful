@@ -17,36 +17,4 @@ describe('db.update', function () {
   });
 
   clearTable('users');
-
-  describe('when the model exists', function () {
-
-  });
-
-  describe('when the model does not exist', function () {
-
-  });
-
-  it('should respond with a 201 when successfully added', function (done) {
-    db.add(User, {
-      username: 'ganemone',
-      name: 'Giancarlo Anemone',
-      email: 'email@gmail.com',
-      password: 'password'
-    }, function(error, result) {
-      assert.ifError(error);
-      assert.deepEqual(result, { key: 'value' });
-      mockResBuilder.get201.assertCalledOnce();
-      done();
-    });
-  });
-  it('should send a 400 when a bad field is given', function (done) {
-    db.add(User, {
-      invalid: 'invalid'
-    }, function(error, result) {
-      assert.ifError(error);
-      assert.deepEqual(result, { message: 'message ' });
-      mockResBuilder.get400.assertCalledOnce();
-      done();
-    });
-  });
 });

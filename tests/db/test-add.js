@@ -34,7 +34,7 @@ describe('db.add', function () {
       invalid: 'invalid'
     }, function(error, result) {
       assert.ifError(error);
-      assert.deepEqual(result, { message: 'message ' });
+      assert.deepEqual(result, { message: 'message' });
       mockResBuilder.get400.assertCalledOnce();
       done();
     });

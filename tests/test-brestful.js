@@ -26,21 +26,29 @@ describe('brestful', function() {
   });
   describe('createAPI', function() {
     it('GET', function() {
-      rest.createAPI(User, ['GET']);
+      rest.createAPI({
+        'collection': User,
+        'methods': ['GET']
+      });
       rest.builder.defineGetSingle.assertCalledOnceWith(['users', User, [], []]);
       rest.builder.defineGetMany.assertCalledOnceWith(['users', User, [], []]);
     });
     it('GET + POST', function() {
       rest.builder.reset();
-      rest.createAPI(User, ['GET', 'POST'], {
-        'GET': {
-          'SINGLE': ['single'],
-          'MANY': ['many']
-        }
-      }, {
-        'GET': {
-          'SINGLE': ['single'],
-          'MANY': ['many']
+      rest.createAPI({
+        'collection': User,
+        'methods': ['GET', 'POST'],
+        'preprocessors': {
+          'GET': {
+            'SINGLE': ['single'],
+            'MANY': ['many']
+          }
+        },
+        'postprocessors': {
+          'GET': {
+            'SINGLE': ['single'],
+            'MANY': ['many']
+          }
         }
       });
       rest.builder.defineGetSingle.assertCalledOnceWith(['users', User, ['single'], ['single']]);
@@ -49,18 +57,18 @@ describe('brestful', function() {
     });
     it('ALL', function() {
       rest.builder.reset();
-      rest.createAPI(
-        User,
-        ['GET', 'POST', 'PUT', 'DELETE'],
-        {
+      rest.createAPI({
+        'collection': User,
+        'methods': ['GET', 'POST', 'PUT', 'DELETE'],
+        'preprocessors': {
           'POST': ['post'],
           'PUT': ['put'],
         },
-        {
+        'postprocessors': {
           'POST': ['post'],
           'DELETE': ['delete']
         }
-      );
+      });
       rest.builder.defineGetSingle.assertCalledOnceWith(['users', User, [], []]);
       rest.builder.defineGetMany.assertCalledOnceWith(['users', User, [], []]);
       rest.builder.definePost.assertCalledOnceWith(['users', User, ['post'], ['post']]);
